@@ -3,31 +3,16 @@ var sheetsCount = ss.getNumSheets();
 var sheets = ss.getSheets();
 
 function onOpen() { 
-  // Try New Google Sheets method
-  try{
     var ui = SpreadsheetApp.getUi();
-    ui.createMenu('Spreadsheet Cleanup')
-    .addItem('Show Sheets', 'showSheets')
-    .addItem('Hide Sheets', 'hideSheets')
-    .addItem('Delete Sheets', 'deleteSheets')
-    .addItem('Copy Sheets', 'copySheets') 
+    ui.createMenu('Helpers')
+    .addSubMenu(ui.createMenu('Sheet functions')
+      .addItem('Show Sheets', 'showSheets')
+      .addItem('Hide Sheets', 'hideSheets')
+      .addItem('Delete Sheets', 'deleteSheets')
+      .addItem('Copy Sheets', 'copySheets') 
+      .addItem('Sort Sheets', 'sortSheets') 
     .addToUi(); 
-  } 
-  
-  // Log the error
-  catch (e){Logger.log(e)}
-  
-  // Use old Google Spreadsheet method
-  finally{
-    var items = [
-      {name: 'Hide Sheets', functionName: 'hideSheets'},
-      {name: 'Show Sheets', functionName: 'showSheets'},
-      {name: 'Delete Sheets', functionName: 'deleteSheets'},
-      {name: 'Copy Sheets', functionName: 'copySheets'},
-    ];
-      ss.addMenu('Spreadsheet Cleanup', items);
-  }
-}
+ }
       
 function deleteSheets() {
   var deleteSheetsContaining = Browser.inputBox("Delete sheets with names containing:"); 
@@ -127,4 +112,26 @@ function successAlert(action) {
      'Success!',
      "You're sheets were " + action + " successfully.",
       ui.ButtonSet.OK);
+}
+
+/* Credit: https://gist.github.com/chipoglesby/26fa70a35f0b420ffc23 */
+
+function sortSheets() {
+
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // Store all the worksheets in this array
+  var sheetNameArray = [];
+  var sheets = ss.getSheets();
+  for (var i = 0; i < sheets.length; i++) {
+    sheetNameArray.push(sheets[i].getName());
+  }
+
+  sheetNameArray.sort();
+
+  // Reorder the sheets.
+  for( var j = 0; j < sheets.length; j++ ) {
+    ss.setActiveSheet(ss.getSheetByName(sheetNameArray[j]));
+    ss.moveActiveSheet(j + 1);
+  }
 }
