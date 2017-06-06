@@ -10,7 +10,7 @@ function onOpen() {
       .addItem('Hide Sheets', 'hideSheets')
       .addItem('Delete Sheets', 'deleteSheets')
       .addItem('Copy Sheets', 'copySheets') 
-      .addItem('Sort Sheets', 'sortSheets') 
+      .addItem('Sort Sheets', 'sortSheets')) 
     .addToUi(); 
  }
       
