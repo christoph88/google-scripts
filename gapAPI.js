@@ -8,7 +8,6 @@ function test() {
 // other accounts can be implented by making a conditional profileID
 
 var spreadsheet = SpreadsheetApp.getActiveSpreadsheet(); 
-var header = [[]];
 var metrics = 'ga:newUsers, ga:percentNewSessions, ga:sessions, ga:bounceRate, ga:avgSessionDuration, ga:pageValue, ga:pageviews, ga:timeOnPage, ga:exits';
 
 // keep track of time the script is running to prevent it going over time
@@ -39,14 +38,17 @@ function getGAPdata(pagepath) {
 
   var output = report.totalsForAllResults;
 
+  var header = [];
   var result = [];
-
+  
+  
   for (var key in output) {
     if (output.hasOwnProperty(key)) {
-      header[0].push(key);
+      header.push(key);
       result.push(output[key]);
     }
   }
+  Logger.log('Header = ' + header.join('\t'));
   
   return result;
 
@@ -103,14 +105,11 @@ function readAndWriteRows() {
     var destRowNumber = i+1;
 
     
+    // do not overwrite header values
     // push api data to the correct range
     // getRange(row, column, numRows, numColumns)
 
-    if ( i == 0 ) {
-      // set header on the first row
-      sheet.getRange(destRowNumber, destColNumber,1,header[0].length).setValues(header); 
-    }
-    if ( i > 0 ) {
+    if ( destRowNumber > 1 ) {
       // process data if not first row
       var processed = processRows(row, URLcolNumber);
       sheet.getRange(destRowNumber, destColNumber,1,processed[0].length).setValues(processed); 
