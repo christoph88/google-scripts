@@ -9,6 +9,14 @@ function metrics() {
   return metrics
 }
 
+// keep track of time the script is running to prevent it going over time
+/* Based on https://gist.github.com/erickoledadevrel/91d3795949e158ab9830 */
+function isTimeUp_(start) {
+  var now = new Date();
+  return now.getTime() - start.getTime() > 300000; // 5 minutes
+}
+
+
 function getGAPdata(pagepath) {
   //var today = new Date();
   //var oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -76,6 +84,15 @@ function readAndWriteRows() {
   
   for (var i = lastProcessedRow.getValue(); i <= numRows; i++) {
     
+    var start = new Date();
+
+    // stop script when time is up and write last processed row to sheet
+    if (isTimeUp_(start)) {
+      Logger.log("Time up");
+      lastProcessedRow.setValue(i);
+      break;
+    }
+
     var row = values[i];
 
     // setup the row where the values need to be set
@@ -95,7 +112,6 @@ function readAndWriteRows() {
       sheet.getRange(destRowNumber+1, destColNumber,1,processed[0].length).setValues(processed); 
     }
     
-    lastProcessedRow.setValue(i);
 
   }
 };
