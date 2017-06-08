@@ -1,3 +1,4 @@
+// delete rows or continue by using not filled rows
 // other accounts can be implented by making a conditional profileID
 
 var spreadsheet = SpreadsheetApp.getActiveSpreadsheet(); 
@@ -65,39 +66,42 @@ function readAndWriteRows() {
   var header = [metrics().replace(/ga:/g,'').split(',')];
 
   var rows = sheet.getDataRange();
-  var numRows = rows.getNumRows();
   var values = rows.getValues();
 
   // setup colNumber which contains the url in the row output
   var URLcolNumber = spreadsheet.getRangeByName('URLcolNumber').getValues()-1; // -1 because here we are working on an array
   var destColNumber = spreadsheet.getRangeByName('destColNumber').getValues();
-  //var URLcolNumber = 1;
-  //var destColNumber = 4;
-
-  for (var i = 0; i <= numRows - 1; i++) {
-    
-    if ( i % 10 == 0 ) {
-      // do not exceed 10 request per second by adding a second pause every ten requests
-      Utilities.sleep(1000);
-    }
+  var lastProcessedRow = spreadsheet.getRangeByName('lastProcessedRow');
+  var numRows = rows.getNumRows();
+  
+  for (var i = lastProcessedRow.getValue(); i <= numRows; i++) {
     
     var row = values[i];
 
     // setup the row where the values need to be set
     var destRowNumber = i;
 
-
+    
     // push api data to the correct range
     // getRange(row, column, numRows, numColumns)
 
-    if ( i == 0) {
+    if ( i == 0 ) {
       // set header on the first row
       sheet.getRange(destRowNumber+1, destColNumber,1,header[0].length).setValues(header); 
-    } else {
+    }
+    if ( i > 0 ) {
       // process data if not first row
       var processed = processRows(row, URLcolNumber);
       sheet.getRange(destRowNumber+1, destColNumber,1,processed[0].length).setValues(processed); 
     }
+    
+    lastProcessedRow.setValue(i);
 
   }
 };
+
+function test() {
+  var lastProcessedRow = spreadsheet.getRangeByName('lastProcessedRow');
+  lastProcessedRow.setValue(1500);
+  Logger.log(lastProcessedRow.getValues());
+}
