@@ -16,7 +16,7 @@ var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
 function readAndWriteRows() {
 
   var sheetName = spreadsheet.getRangeByName('sheetName').getValues();
-  var sheet = spreadsheet.getSheetByName('data');
+  var sheet = spreadsheet.getSheetByName(sheetName);
   var header = [['Newusers','Percentnewsessions','Sessions','Bouncerate','Avgsessionduration','Pagevalue','Pageviews','Timeonpage','Exits']];
   
   var rows = sheet.getDataRange();
