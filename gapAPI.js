@@ -1,3 +1,5 @@
+// other accounts can be implented by making a conditional profileID
+
 var spreadsheet = SpreadsheetApp.getActiveSpreadsheet(); 
 
 function metrics() {
@@ -12,8 +14,8 @@ function getGAPdata(pagepath) {
   //var startDate = Utilities.formatDate(oneWeekAgo, Session.getTimeZone(),'yyyy-MM-dd');
   //var endDate = Utilities.formatDate(today, Session.getTimeZone(),'yyyy-MM-dd');
 
-  var startDate = '7daysAgo';
-  var endDate = 'today';
+  var startDate = '30daysAgo';
+  var endDate = 'yesterday';
   var profileId = '109751388';
   var tableId  = 'ga:' + profileId;
   var metric = metrics();
@@ -41,7 +43,7 @@ function getGAPdata(pagepath) {
 function processRows(row, URLcolNumber) {
 
   // replace website name in searchable url
-  var websites = new RegExp('http://www.(centerparcs.be|sunparks|pierreetvacances).(com|be|fr|de|nl)','gi');
+  var websites = new RegExp('http://www.(centerparcs|sunparks|pierreetvacances).(com|be|fr|de|nl)','gi');
   var url = row[URLcolNumber].replace(websites,'');
 
   var result = [getGAPdata(url)];
@@ -73,6 +75,12 @@ function readAndWriteRows() {
   //var destColNumber = 4;
 
   for (var i = 0; i <= numRows - 1; i++) {
+    
+    if ( i % 10 == 0 ) {
+      // do not exceed 10 request per second by adding a second pause every ten requests
+      Utilities.sleep(1000);
+    }
+    
     var row = values[i];
 
     // setup the row where the values need to be set
@@ -86,6 +94,7 @@ function readAndWriteRows() {
       // set header on the first row
       sheet.getRange(destRowNumber+1, destColNumber,1,header[0].length).setValues(header); 
     } else {
+      // process data if not first row
       var processed = processRows(row, URLcolNumber);
       sheet.getRange(destRowNumber+1, destColNumber,1,processed[0].length).setValues(processed); 
     }
