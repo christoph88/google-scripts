@@ -1,19 +1,22 @@
+function test() {
+  var test = getGAPdata('/be-wl/france/fp_BF_vacances-domaine-les-bois-francs/itineraire');
+  Logger.log(test);
+}
+
+
 // delete rows or continue by using not filled rows
 // other accounts can be implented by making a conditional profileID
 
 var spreadsheet = SpreadsheetApp.getActiveSpreadsheet(); 
-
-function metrics() {
-  var metrics = 'ga:newUsers, ga:percentNewSessions, ga:sessions, ga:bounceRate, ga:avgSessionDuration, ga:pageValue, ga:pageviews, ga:timeOnPage, ga:exits';
-
-  return metrics
-}
+var header = [[]];
+var metrics = 'ga:newUsers, ga:percentNewSessions, ga:sessions, ga:bounceRate, ga:avgSessionDuration, ga:pageValue, ga:pageviews, ga:timeOnPage, ga:exits';
 
 // keep track of time the script is running to prevent it going over time
 /* Based on https://gist.github.com/erickoledadevrel/91d3795949e158ab9830 */
 function isTimeUp_(start) {
   var now = new Date();
-  return now.getTime() - start.getTime() > 300000; // 5 minutes
+  var maxMinutes = 1000*60*4
+  return now.getTime() - start.getTime() > maxMinutes; // 5 minutes
 }
 
 
@@ -27,12 +30,11 @@ function getGAPdata(pagepath) {
   var endDate = 'yesterday';
   var profileId = '109751388';
   var tableId  = 'ga:' + profileId;
-  var metric = metrics();
   var options = {
     'dimensions': 'ga:pagePath',
     'filters': 'ga:pagePath=~' + pagepath
   };
-  var report = Analytics.Data.Ga.get(tableId, startDate, endDate, metric,
+  var report = Analytics.Data.Ga.get(tableId, startDate, endDate, metrics,
     options);
 
   var output = report.totalsForAllResults;
@@ -41,10 +43,11 @@ function getGAPdata(pagepath) {
 
   for (var key in output) {
     if (output.hasOwnProperty(key)) {
+      header[0].push(key);
       result.push(output[key]);
     }
   }
-
+  
   return result;
 
 }
@@ -71,14 +74,14 @@ function readAndWriteRows() {
 
   var sheetName = spreadsheet.getRangeByName('sheetName').getValues();
   var sheet = spreadsheet.getSheetByName(sheetName);
-  var header = [metrics().replace(/ga:/g,'').split(',')];
+
 
   var rows = sheet.getDataRange();
   var values = rows.getValues();
 
   // setup colNumber which contains the url in the row output
-  var URLcolNumber = spreadsheet.getRangeByName('URLcolNumber').getValues()-1; // -1 because here we are working on an array
-  var destColNumber = spreadsheet.getRangeByName('destColNumber').getValues();
+  var URLcolNumber = spreadsheet.getRangeByName('URLcolNumber').getValue()-1; // -1 because here we are working on an array
+  var destColNumber = spreadsheet.getRangeByName('destColNumber').getValue();
   var lastProcessedRow = spreadsheet.getRangeByName('lastProcessedRow');
   var numRows = rows.getNumRows();
   
@@ -96,7 +99,8 @@ function readAndWriteRows() {
     var row = values[i];
 
     // setup the row where the values need to be set
-    var destRowNumber = i;
+    // +1 since array starts at 0
+    var destRowNumber = i+1;
 
     
     // push api data to the correct range
@@ -104,20 +108,20 @@ function readAndWriteRows() {
 
     if ( i == 0 ) {
       // set header on the first row
-      sheet.getRange(destRowNumber+1, destColNumber,1,header[0].length).setValues(header); 
+      sheet.getRange(destRowNumber, destColNumber,1,header[0].length).setValues(header); 
     }
     if ( i > 0 ) {
       // process data if not first row
       var processed = processRows(row, URLcolNumber);
-      sheet.getRange(destRowNumber+1, destColNumber,1,processed[0].length).setValues(processed); 
+      sheet.getRange(destRowNumber, destColNumber,1,processed[0].length).setValues(processed); 
     }
     
 
   }
 };
 
-function test() {
+function resetLastProcessed() {
   var lastProcessedRow = spreadsheet.getRangeByName('lastProcessedRow');
-  lastProcessedRow.setValue(1500);
-  Logger.log(lastProcessedRow.getValues());
+  lastProcessedRow.setValue(0);
+  Logger.log('Reset last processed rows');
 }
