@@ -25,7 +25,7 @@ function run() {
 // other accounts can be implented by making a conditional profileID
 
 var spreadsheet = SpreadsheetApp.getActiveSpreadsheet(); 
-var metrics = 'ga:newUsers, ga:percentNewSessions, ga:sessions, ga:bounceRate, ga:avgSessionDuration, ga:pageValue, ga:pageviews, ga:timeOnPage, ga:exits';
+var metrics = 'ga:pageviews, ga:uniquePageviews, ga:avgTimeOnPage, ga:entrances, ga:bounces, ga:exits, ga:pageValue ';
 
 // keep track of time the script is running to prevent it going over time
 /* Based on https://gist.github.com/erickoledadevrel/91d3795949e158ab9830 */
