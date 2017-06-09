@@ -12,6 +12,7 @@ var metrics = 'ga:newUsers, ga:percentNewSessions, ga:sessions, ga:bounceRate, g
 
 // keep track of time the script is running to prevent it going over time
 /* Based on https://gist.github.com/erickoledadevrel/91d3795949e158ab9830 */
+
 function isTimeUp_(start) {
   var now = new Date();
   var maxMinutes = 1000*60*4
@@ -87,9 +88,9 @@ function readAndWriteRows() {
   var lastProcessedRow = spreadsheet.getRangeByName('lastProcessedRow');
   var numRows = rows.getNumRows();
   
+  var start = new Date();
+  
   for (var i = lastProcessedRow.getValue(); i <= numRows; i++) {
-    
-    var start = new Date();
 
     // stop script when time is up and write last processed row to sheet
     if (isTimeUp_(start)) {
