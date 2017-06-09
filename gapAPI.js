@@ -4,14 +4,13 @@ function test() {
 }
 
 function run() {
+  // run is needed to check for correct weekday.
   var now = new Date();
   var weekday = now.getDay();
   var runday = 0;  // sunday = 0
   
   if ( weekday == runday ) {
     
-    Logger.log('Resetting last processed...');
-    resetLastProcessed();
     Logger.log('Running readAndWriteRows function...');
     readAndWriteRows();
     
@@ -25,7 +24,7 @@ function run() {
 // other accounts can be implented by making a conditional profileID
 
 var spreadsheet = SpreadsheetApp.getActiveSpreadsheet(); 
-var metrics = 'ga:pageviews, ga:uniquePageviews, ga:avgTimeOnPage, ga:entrances, ga:bounces, ga:exits, ga:pageValue ';
+var metrics = 'ga:sessions, ga:pageviews, ga:uniquePageviews, ga:avgTimeOnPage, ga:entrances, ga:bounces, ga:exits, ga:pageValue ';
 
 // keep track of time the script is running to prevent it going over time
 /* Based on https://gist.github.com/erickoledadevrel/91d3795949e158ab9830 */
@@ -114,6 +113,7 @@ function readAndWriteRows() {
     
 
     // stop script when time is up and write last processed row to sheet
+    // since there is a break we have to go one back.
     if (isTimeUp_(start)) {
       Logger.log("Time up");
       lastProcessedRow.setValue(i-1);
@@ -131,8 +131,9 @@ function readAndWriteRows() {
     // getRange(row, column, numRows, numColumns)
     
     if ( destRowNumber == numRows ){
-      // value of i is set. The actual last processed row is +1 but the value array starts at 0.
-      lastProcessedRow.setValue(i);
+      // value of i+1 is set. The actual last processed row is one less because the value array starts at 0.
+      // once the last row is processed we don't want this row to keep looping
+      lastProcessedRow.setValue(i+1);
     };
 
     if ( row != undefined && destRowNumber > 1 ) {
