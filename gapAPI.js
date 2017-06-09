@@ -3,6 +3,23 @@ function test() {
   Logger.log(test);
 }
 
+function run() {
+  var now = new Date();
+  var weekday = now.getDay();
+  var runday = 0;  // sunday = 0
+  
+  if ( weekday == runday ) {
+    
+    Logger.log('Resetting last processed...');
+    resetLastProcessed();
+    Logger.log('Running readAndWriteRows function...');
+    readAndWriteRows();
+    
+  } else {
+    Logger.log('Today is: ' + weekday + ', the script runs on ' + runday + '.');
+  }
+}
+
 
 // delete rows or continue by using not filled rows
 // other accounts can be implented by making a conditional profileID
@@ -19,6 +36,10 @@ function isTimeUp_(start) {
   return now.getTime() - start.getTime() > maxMinutes; // 5 minutes
 }
 
+function getGAPprofileID(pagepath) {
+  return 'ga:109751388';
+}
+
 
 function getGAPdata(pagepath) {
   //var today = new Date();
@@ -28,8 +49,7 @@ function getGAPdata(pagepath) {
 
   var startDate = '30daysAgo';
   var endDate = 'yesterday';
-  var profileId = '109751388';
-  var tableId  = 'ga:' + profileId;
+  var tableId  = getGAPprofileID(pagepath);
   var options = {
     'dimensions': 'ga:pagePath',
     'filters': 'ga:pagePath=~' + pagepath
