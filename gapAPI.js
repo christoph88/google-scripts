@@ -15,7 +15,7 @@ var metrics = 'ga:newUsers, ga:percentNewSessions, ga:sessions, ga:bounceRate, g
 
 function isTimeUp_(start) {
   var now = new Date();
-  var maxMinutes = 1000*60*4
+  var maxMinutes = 1000*60*4.8
   return now.getTime() - start.getTime() > maxMinutes; // 5 minutes
 }
 
@@ -88,14 +88,15 @@ function readAndWriteRows() {
   var lastProcessedRow = spreadsheet.getRangeByName('lastProcessedRow');
   var numRows = rows.getNumRows();
   
-  var start = new Date();
+  var start = new Date(); //define start of the script
   
-  for (var i = lastProcessedRow.getValue(); i <= numRows; i++) {
+  for (var i = lastProcessedRow.getValue(); i < numRows; i++) {
+    
 
     // stop script when time is up and write last processed row to sheet
     if (isTimeUp_(start)) {
       Logger.log("Time up");
-      lastProcessedRow.setValue(i);
+      lastProcessedRow.setValue(i-1);
       break;
     }
 
@@ -104,13 +105,17 @@ function readAndWriteRows() {
     // setup the row where the values need to be set
     // +1 since array starts at 0
     var destRowNumber = i+1;
-
     
     // do not overwrite header values
     // push api data to the correct range
     // getRange(row, column, numRows, numColumns)
+    
+    if ( destRowNumber == numRows ){
+      // value of i is set. The actual last processed row is +1 but the value array starts at 0.
+      lastProcessedRow.setValue(i);
+    };
 
-    if ( destRowNumber > 1 ) {
+    if ( row != undefined && destRowNumber > 1 ) {
       // process data if not first row
       var processed = processRows(row, URLcolNumber);
       sheet.getRange(destRowNumber, destColNumber,1,processed[0].length).setValues(processed); 
