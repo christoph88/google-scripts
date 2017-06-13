@@ -1,6 +1,9 @@
 function test() {
-  var test = getGAPdata('/be-wl/france/fp_BF_vacances-domaine-les-bois-francs/itineraire');
-  Logger.log(test);
+  //var test = getGAPdata('/be-wl/france/fp_BF_vacances-domaine-les-bois-francs/itineraire');
+  //Logger.log(test);
+  
+  var now = new Date();  
+  spreadsheet.getRangeByName('lastProcessedDate').setValue(now);
 }
 
 function run() {
@@ -10,6 +13,8 @@ function run() {
   var runday = 0;  // sunday = 0
   
   if ( weekday == runday ) {
+    
+    spreadsheet.getRangeByName('lastProcessedDate').setValue(now);
     
     Logger.log('Running readAndWriteRows function...');
     readAndWriteRows();
