@@ -1,9 +1,18 @@
 function test() {
-  //var test = getGAPdata('/be-wl/france/fp_BF_vacances-domaine-les-bois-francs/itineraire');
-  //Logger.log(test);
   
-  var now = new Date();  
-  spreadsheet.getRangeByName('lastProcessedDate').setValue(now);
+  var sheetName = spreadsheet.getRangeByName('sheetName').getValues();
+  var sheet = spreadsheet.getSheetByName(sheetName);
+  var rows = sheet.getDataRange();
+  var values = rows.getValues();
+  var URLcolNumber = spreadsheet.getRangeByName('URLcolNumber').getValue()-1; // -1 because here we are working on an array
+  
+  var row = values[495]
+  
+  var test = getGAPdata(row, URLcolNumber);
+  Logger.log(test);
+  
+  //var now = new Date();  
+  //spreadsheet.getRangeByName('lastProcessedDate').setValue(now);
 }
 
 function run() {
@@ -40,12 +49,32 @@ function isTimeUp_(start) {
   return now.getTime() - start.getTime() > maxMinutes; // 5 minutes
 }
 
-function getGAPprofileID(pagepath) {
-  return 'ga:109751388';
+function getGAPprofileID(url) {
+  
+  Logger.log(url);
+  var regex = new RegExp('(http:\/\/(www|inspiratie|inspiration).(centerparcs|sunparks|pierreetvacances).(com|be|fr|de|nl)).*','gi');
+  var website = regex.exec(url)[1];
+  
+  var profiles = {
+    "http://www.centerparcs.be":"ga:109751388",
+    "http://inspiratie.centerparcs.be/":"ga:104899566"}
+  
+  Logger.log(website);
+  Logger.log(profiles);
+  Logger.log(profiles[website]);
+  
+  return profiles[website];
 }
 
 
-function getGAPdata(pagepath) {
+function getGAPdata(row, URLcolNumber) {
+  
+  // replace website name in searchable url
+  var websites = new RegExp('http://www.(centerparcs|sunparks|pierreetvacances).(com|be|fr|de|nl)','gi');
+  var url = row[URLcolNumber];
+  var pagepath = url.replace(websites,'');
+  
+  
   //var today = new Date();
   //var oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
   //var startDate = Utilities.formatDate(oneWeekAgo, Session.getTimeZone(),'yyyy-MM-dd');
@@ -53,7 +82,7 @@ function getGAPdata(pagepath) {
 
   var startDate = '30daysAgo';
   var endDate = 'yesterday';
-  var tableId  = getGAPprofileID(pagepath);
+  var tableId  = getGAPprofileID(url);
   var options = {
     'dimensions': 'ga:pagePath',
     'filters': 'ga:pagePath=~' + pagepath
@@ -64,13 +93,13 @@ function getGAPdata(pagepath) {
   var output = report.totalsForAllResults;
 
   var header = [];
-  var result = [];
+  var result = [[]];
   
   
   for (var key in output) {
     if (output.hasOwnProperty(key)) {
       header.push(key);
-      result.push(output[key]);
+      result[0].push(output[key]);
     }
   }
   Logger.log('Header = ' + header.join('\t'));
@@ -78,18 +107,6 @@ function getGAPdata(pagepath) {
   return result;
 
 }
-
-function processRows(row, URLcolNumber) {
-
-  // replace website name in searchable url
-  var websites = new RegExp('http://www.(centerparcs|sunparks|pierreetvacances).(com|be|fr|de|nl)','gi');
-  var url = row[URLcolNumber].replace(websites,'');
-
-  var result = [getGAPdata(url)];
-
-  return result;
-
-};
 
 /**
  * Retrieves all the rows in the defined spreadsheet that contain data and logs the
@@ -143,7 +160,7 @@ function readAndWriteRows() {
 
     if ( row != undefined && destRowNumber > 1 ) {
       // process data if not first row
-      var processed = processRows(row, URLcolNumber);
+      var processed = getGAPdata(row, URLcolNumber);
       sheet.getRange(destRowNumber, destColNumber,1,processed[0].length).setValues(processed); 
     }
     
