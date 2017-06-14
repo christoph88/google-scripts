@@ -5,10 +5,11 @@ function test() {
   var rows = sheet.getDataRange();
   var values = rows.getValues();
   var URLcolNumber = spreadsheet.getRangeByName('URLcolNumber').getValue()-1; // -1 because here we are working on an array
+  var DOMAINcolNumber = spreadsheet.getRangeByName('DOMAINcolNumber').getValue()-1;
   
   var row = values[1520]
   
-  var test = getGAPdata(row, URLcolNumber);
+  var test = getGAPdata(row, URLcolNumber, DOMAINcolNumber);
   
   Logger.log('This is the output of test:');
   Logger.log(test);
@@ -51,30 +52,29 @@ function isTimeUp_(start) {
   return now.getTime() - start.getTime() > maxMinutes; // 5 minutes
 }
 
-function getGAPprofileID(url) {
+function getGAPprofileID(domain) {
   
-  Logger.log(url);
-  var regex = new RegExp('(http:\/\/(www|inspiratie|inspiration).(centerparcs|sunparks|pierreetvacances).(com|be|fr|de|nl)).*','gi');
-  var website = regex.exec(url)[1];
-  
+  Logger.log(domain);
+
   // input sites without slash at the end
   var profiles = {
-    "http://www.centerparcs.be":"ga:109751388",
-    "http://inspiratie.centerparcs.be":"ga:104899566",
-    "http://inspiratie.centerparcs.nl":"ga:104898084"}
+    "www.centerparcs.be":"ga:109751388",
+    "inspiratie.centerparcs.be":"ga:104899566",
+    "inspiratie.centerparcs.nl":"ga:104898084"}
   
-  return profiles[website];
+  return profiles[domain];
 }
 
 
-function getGAPdata(row, URLcolNumber) {
+function getGAPdata(row, URLcolNumber, DOMAINcolNumber) {
   
   // replace website name in searchable url
   var websites = new RegExp('http://www.(centerparcs|sunparks|pierreetvacances).(com|be|fr|de|nl)','gi');
   var url = row[URLcolNumber];
   var pagepath = url.replace(websites,'');
   
-  
+  Logger.log(DOMAINcolNumber);
+  Logger.log(row[DOMAINcolNumber]);
   //var today = new Date();
   //var oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
   //var startDate = Utilities.formatDate(oneWeekAgo, Session.getTimeZone(),'yyyy-MM-dd');
@@ -82,7 +82,7 @@ function getGAPdata(row, URLcolNumber) {
 
   var startDate = '30daysAgo';
   var endDate = 'yesterday';
-  var tableId  = getGAPprofileID(url);
+  var tableId  = getGAPprofileID(row[DOMAINcolNumber]);
   var options = {
     'dimensions': 'ga:pagePath',
     'filters': 'ga:pagePath=~' + pagepath
@@ -125,6 +125,7 @@ function readAndWriteRows() {
 
   // setup colNumber which contains the url in the row output
   var URLcolNumber = spreadsheet.getRangeByName('URLcolNumber').getValue()-1; // -1 because here we are working on an array
+  var DOMAINcolNumber = spreadsheet.getRangeByName('DOMAINcolNumber').getValue()-1; // -1 because here we are working on an array
   var destColNumber = spreadsheet.getRangeByName('destColNumber').getValue();
   var lastProcessedRow = spreadsheet.getRangeByName('lastProcessedRow');
   var numRows = rows.getNumRows();
@@ -160,7 +161,7 @@ function readAndWriteRows() {
 
     if ( row != undefined && destRowNumber > 1 ) {
       // process data if not first row
-      var processed = getGAPdata(row, URLcolNumber);
+      var processed = getGAPdata(row, URLcolNumber, DOMAINcolNumber);
       sheet.getRange(destRowNumber, destColNumber,1,processed[0].length).setValues(processed); 
     }
     
