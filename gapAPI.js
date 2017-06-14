@@ -6,9 +6,11 @@ function test() {
   var values = rows.getValues();
   var URLcolNumber = spreadsheet.getRangeByName('URLcolNumber').getValue()-1; // -1 because here we are working on an array
   
-  var row = values[495]
+  var row = values[1520]
   
   var test = getGAPdata(row, URLcolNumber);
+  
+  Logger.log('This is the output of test:');
   Logger.log(test);
   
   //var now = new Date();  
@@ -55,13 +57,11 @@ function getGAPprofileID(url) {
   var regex = new RegExp('(http:\/\/(www|inspiratie|inspiration).(centerparcs|sunparks|pierreetvacances).(com|be|fr|de|nl)).*','gi');
   var website = regex.exec(url)[1];
   
+  // input sites without slash at the end
   var profiles = {
     "http://www.centerparcs.be":"ga:109751388",
-    "http://inspiratie.centerparcs.be/":"ga:104899566"}
-  
-  Logger.log(website);
-  Logger.log(profiles);
-  Logger.log(profiles[website]);
+    "http://inspiratie.centerparcs.be":"ga:104899566",
+    "http://inspiratie.centerparcs.nl":"ga:104898084"}
   
   return profiles[website];
 }
