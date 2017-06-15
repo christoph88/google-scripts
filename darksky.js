@@ -185,6 +185,7 @@ function run() {
 
   // push table to range
   setSheetValues(table);
+  SpreadsheetApp.getActiveSpreadsheet().toast('Weather task finished', 'Status');
 
 
 }
