@@ -104,6 +104,7 @@ function darksky(key, lat, lng, time) {
     + '&lang=en'
     + '&units=si';
 
+  Logger.log(url);
   var response = JSON.parse(UrlFetchApp.fetch(url,{muteHttpExceptions:false}));
 
   return response;
@@ -128,25 +129,27 @@ Array.prototype.includes = function(obj) {
   return false;
 }
 
-function setSheetValues(array){
+function setSheetValues(array, row){
   var spreadsheet = SpreadsheetApp.getActive();
   var sheet = spreadsheet.getSheetByName('data');
   var rows = sheet.getDataRange();
   var values = rows.getValues();
 
-  var row = 1;
+  var row = row;
   var column = 2;
-  var numRows = array.length; //7
-  var numColumns = array[0].length; //28
-
-  Logger.log(numRows);
-  Logger.log(numColumns);
+  var numRows = array.length;
+  var numColumns = array[0].length;
 
   sheet.getRange(row, column, numRows, numColumns).setValues(array);
 }
 
+function prompt() {
+  var startRow = SpreadsheetApp.getActive().getRangeByName('pStartRow').getValue();
+  run(startRow);
+}
 
-function run() {
+
+function run(startRow) {
 
   // get params
   var key = SpreadsheetApp.getActive().getRangeByName('pApikey').getValue();
@@ -157,14 +160,19 @@ function run() {
   //var time = unixTime(new Date());
   var getDates = getSheetValues()
   var fields = "summary,icon,temperatureMin,temperatureMax,humidity,windSpeed".split(",");
-  Logger.log(fields);
+
+  var startRowSheet = startRow || 1;
+  var startRowArray = startRow-1 || 1;
+
 
 
   // fetch data and put in array (table) grouped by rows
   var table = [];
 
-  for (i = 1; i < getDates.length; i++) {
-    var time = unixTime(getDates[i][0])
+  for (i = startRowArray; i < getDates.length; i++) {
+    var humanTime = getDates[i][0];
+    var time = unixTime(humanTime)
+    Logger.log(humanTime);
     try {
       var weatherRes = darksky(key, lat, lng, time);
       //var weatherRes = testJSON();
@@ -181,10 +189,8 @@ function run() {
     }
   }
 
-  Logger.log(table);
-
   // push table to range
-  setSheetValues(table);
+  setSheetValues(table, startRowSheet);
   SpreadsheetApp.getActiveSpreadsheet().toast('Weather task finished', 'Status');
 
 
