@@ -7,9 +7,9 @@ function onOpen(e) {
 }
 
 function uploadData() {
-  var accountId = "";
-  var webPropertyId = "";
-  var customDataSourceId = "";
+  var accountId = "3356674";
+  var webPropertyId = "UA-3356674-58";
+  var customDataSourceId = "thKg27PmReOZitLfalOrsA";
   var ss = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var maxRows = ss.getLastRow();
   var maxColumns = ss.getLastColumn();
