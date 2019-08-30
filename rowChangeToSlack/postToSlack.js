@@ -11,7 +11,7 @@ var headers = sheet.getRange("1:1").getValues();
 var headerNum = headers[0].length;
 
 // track changed rows
-function onChange(e) {
+function onEdit(e) {
   var currentCache = cache.get('changes') || '{"data": []}';
   var rowNum = e.range.getRow();
   var obj = JSON.parse(currentCache);

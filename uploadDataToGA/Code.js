@@ -6,6 +6,7 @@ function onOpen(e) {
       .addToUi();
 }
 
+// upload campaign data
 function uploadData() {
   var accountId = SpreadsheetApp.getActiveSpreadsheet().getRangeByName('accountId').getValue();
   var webPropertyId = SpreadsheetApp.getActiveSpreadsheet().getRangeByName('webPropertyId').getValue();
