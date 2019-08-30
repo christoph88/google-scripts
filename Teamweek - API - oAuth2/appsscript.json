@@ -1,0 +1,21 @@
+{
+  "timeZone": "Europe/Paris",
+  "dependencies": {
+    "enabledAdvancedServices": [{
+      "userSymbol": "Sheets",
+      "serviceId": "sheets",
+      "version": "v4"
+    }, {
+      "userSymbol": "Calendar",
+      "serviceId": "calendar",
+      "version": "v3"
+    }],
+    "libraries": [{
+      "userSymbol": "OAuth2",
+      "libraryId": "1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF",
+      "version": "33",
+      "developmentMode": true
+    }]
+  },
+  "exceptionLogging": "STACKDRIVER"
+}
