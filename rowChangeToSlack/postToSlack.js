@@ -17,11 +17,11 @@ function onEdit(e) {
   var obj = JSON.parse(currentCache);
 
   obj.data.push(rowNum);
-
-  cache.put('changes', JSON.stringify(obj));
-  
   // show cache
   Logger.log(obj);
+  
+  cache.put('changes', JSON.stringify(obj));
+  
 }
 
 function testCache() {
@@ -88,7 +88,7 @@ function testSlack() {
 
 function postToSlack(data, test) {
   if (test === 'test') {
-    var SLACK_WEBHOOK_POST_URL = SLACK_WEBHOOK_TEST_URL;
+    SLACK_WEBHOOK_POST_URL = SLACK_WEBHOOK_TEST_URL;
   }
 
   Logger.log('post to slack ' + data.description);
