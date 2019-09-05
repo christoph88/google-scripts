@@ -39,7 +39,9 @@ function getCache() {
 
 // send all rows in cache to slack
 function cacheToSlack(test) {
+  // check if there are any changes in the cache
   if (!cache.get('changes')) {return true;}
+  // get cache changes
   var cacheData = JSON.parse(cache.get('changes'));
   
   // only unique values

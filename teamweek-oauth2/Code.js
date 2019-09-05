@@ -1,8 +1,8 @@
 // https://developers.teamweek.com/index.html
 // https://github.com/gsuitedevs/apps-script-oauth2
 //
-var CLIENT_ID = SpreadsheetApp.getActiveSpreadsheet().getRangeByName('client_id');
-var CLIENT_SECRET = SpreadsheetApp.getActiveSpreadsheet().getRangeByName('client_secret');
+var CLIENT_ID = SpreadsheetApp.getActiveSpreadsheet().getRangeByName('client_id').getValue();
+var CLIENT_SECRET = SpreadsheetApp.getActiveSpreadsheet().getRangeByName('client_secret').getValue();
 
 function getService() {
   // Create a new service with the given name. The name will be used when
@@ -118,6 +118,7 @@ function getTasks() {
     }
     Logger.log(array);
     toSheet(array);
+    processData();
     
   } 
 }
