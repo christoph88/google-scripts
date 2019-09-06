@@ -36,6 +36,7 @@ function createGantt() {
     var startDate = data[i][0];
     var endDate = data[i][1];
     var name = data[i][2];
+    var notes = data[i][3];
 
     // only draw if name contains campaign
     // only draw if name contains following KPI's
@@ -48,12 +49,16 @@ function createGantt() {
       // rows are split based on kpi
       var kpi = kpiFound[0];
       var startRow = startRows[kpi];
-      drawGantt(startDate, endDate, name, startRow);
+      drawGantt(startDate, endDate, name, notes, startRow);
     }
   }
 }
 
-function drawGantt(start, end, name, startRow) {
+function createNote(start, end, name, notes) {
+  return 'Startdate: '+start+'\nEnddate: '+end+'\nCampaign:'+name+'\nNotes:'+notes;
+}
+
+function drawGantt(start, end, name, notes, startRow) {
   // get the start and end column
   var item = getGanttCol(start, end);
   var kpi = name.match(/(ACQ|VD|MGM|Pre-2-Post)/g)[0];
@@ -61,6 +66,7 @@ function drawGantt(start, end, name, startRow) {
   var startColumn = item.startCol;
   var numRows = 1;
   var numColumns = item.endCol - item.startCol + 1;
+  var note = createNote(start, end, name, notes);
 
   Logger.log(startRow);
   Logger.log(startColumn);
@@ -76,7 +82,8 @@ function drawGantt(start, end, name, startRow) {
     .setValue(name)
     .setBackground(kpiColors[kpi])
     .setFontColor("white")
-    .setHorizontalAlignment("Center");
+    .setHorizontalAlignment("Center")
+    .setNote(note);
 }
 
 function getGanttCol(start, end) {
