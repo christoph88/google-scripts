@@ -4,6 +4,7 @@ function onOpen(e) {
       .createMenu('Teamweek')
       .addItem('Connect to service', 'showSidebar')
       .addItem('Get tasks', 'getTasks')
+      .addItem('Update Gantt', 'createGantt')
       .addItem('Log out', 'logout')
       .addToUi();
 }

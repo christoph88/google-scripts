@@ -20,7 +20,7 @@ var kpiColors = {
   others: "grey"
 };
 
-function processData() {
+function createGantt() {
   // clear current gantt before processing data
   SpreadsheetApp.getActive()
     .getSheetByName("gantt")
@@ -74,7 +74,7 @@ function drawGantt(start, end, name, startRow) {
   range
     .merge()
     .setValue(name)
-    .setBackground(kpiColor[kpi])
+    .setBackground(kpiColors[kpi])
     .setFontColor("white")
     .setHorizontalAlignment("Center");
 }
