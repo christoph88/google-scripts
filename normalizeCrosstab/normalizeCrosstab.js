@@ -1,18 +1,8 @@
 function normalizeCrosstabb(table, column) {
-  if (!really) {
-    return start();
-  }
-  var sheet = SpreadsheetApp.getActiveSheet(); 
-  var rows = sheet.getDataRange();
   var numRows = table.length;
   var values = table;
-  var firstDataCol = SpreadsheetApp.getActiveRange().getColumn();
+  var firstDataCol = column;
   var dataCols = values[0].slice(firstDataCol-1);
-
-  var resultssheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("NormalizedResult");
-  if (resultssheet != null) {
-    SpreadsheetApp.getActive().deleteSheet(resultssheet);
-  }
   var header = values[0].slice(0, firstDataCol - 1);
 
   var newRows = [];
@@ -30,7 +20,5 @@ function normalizeCrosstabb(table, column) {
       newRows.push(newRow);
     }
   }
-  var newSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("NormalizedResult");
-  var r = newSheet.getRange(1,1,newRows.length, header.length);
-  r.setValues(newRows);
+  return newRows;
 };
