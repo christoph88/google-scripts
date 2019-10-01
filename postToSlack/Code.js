@@ -87,7 +87,7 @@ function sendToSlack(response, test) {
           },
           {
             type: "mrkdwn",
-            text: "*Assets:*\n" + response["Assets"].join("\n")
+            text: "*Assets:*\n" + response["Digital assets"].join("\n")
           },
           {
             type: "mrkdwn",
